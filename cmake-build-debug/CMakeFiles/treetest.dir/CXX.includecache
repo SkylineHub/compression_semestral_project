@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/ondrejkotasek/Desktop/treetest/main.cpp
+ostream
+-
+iostream
+-
+vector
+-
+queue
+-
+fstream
+-
+cmath
+-
+
