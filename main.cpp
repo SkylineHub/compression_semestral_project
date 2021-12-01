@@ -139,16 +139,16 @@ void LevelOrderTraversal(Node * root)
     }
 }
 
-void getEntropy(Node * root, int k, float *entropy, float *counts, float *sizes){
+void getEntropy(Node * root, int k, double *entropy, long *counts, long *sizes){
     for (int j = 0; j < root->child.size(); j++) {
         sizes[k] += root->child[j]->freq;
         if (root->child[j]->freq != root->freq) {
             counts[k] += root->child[j]->freq;
-            float x;
+            double x;
             if (root->isLast) {
-                x = (float) root->child[j]->freq / ((float) root->freq - 1.0);
+                x = (double) root->child[j]->freq / ((double) root->freq - 1.0);
             } else {
-                x = (float) root->child[j]->freq / (float) root->freq;
+                x = (double) root->child[j]->freq / (double) root->freq;
             }
             entropy[k] -= x * log2(x);
         }
@@ -159,17 +159,16 @@ void getEntropy(Node * root, int k, float *entropy, float *counts, float *sizes)
 }
 
 float getEntropyKth(Node * root, int k) {
-    k = k - 1;
     if(k < 1 || k > 7) {
         cout << "Mimo rozsah!" << endl;
         return 0;
     }
-
+    k = k - 1;
     int newK = 0;
 
-    float entropy[7];
-    float counts[7];
-    float sizes[7];
+    double entropy[7];
+    long counts[7];
+    long sizes[7];
 
     for (int i = 0; i < 7; i++) {
         sizes[i] = 0;
@@ -187,11 +186,11 @@ float getEntropyKth(Node * root, int k) {
         cout << "Počet: " << counts[i] << endl;
         cout << "Entropy: " << entropy[i] << endl;
         if(sizes[i] != 0) {
-            cout << "Výsledek: " << (counts[i] / sizes[i]) * entropy[i] << endl;
+            cout << "Výsledek: " << ((double)counts[i] / (double)sizes[i]) * entropy[i] << endl;
         }
     }
 
-    return (counts[k] / sizes[k]) * entropy[k];
+    return ((double)counts[k] / (double)sizes[k]) * entropy[k];
 }
 
 float getZeroOrderEntropy(Node * root, int size) {
@@ -268,10 +267,11 @@ int main()
         }
          */
     }
-
-    LevelOrderTraversal(root);
+    cout << "Tree completed." << endl;
+    //LevelOrderTraversal(root);
     int k = 3;
     float entropy = getEntropyKth(root, k);
+    cout << "Kth entropy comepleted." << endl;
     cout << "Zero order entropy: " << getZeroOrderEntropy(root, size) << endl;
     cout << k << "th order entropy: " << entropy << endl;
     return 0;
