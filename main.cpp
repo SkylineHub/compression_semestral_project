@@ -13,6 +13,7 @@ struct Node
     int freq = 1;
     Node *parent = NULL;
     vector<Node *>child;
+    bool isLast = false;
 };
 
 Node *newNode(char key)
@@ -30,87 +31,87 @@ Node *newNode(char key, Node *parent)
     return temp;
 }
 
-void addValue(Node *root, char x) {
-    bool firstLayer = true;
-    int i;
-    for (i = 0; i < root->child.size(); i++) {
-        if (root->child[i]->key == x) {
-            root->child[i]->freq += 1;
-            firstLayer = false;
-            break;
-        }
-    }
-    if (firstLayer == true) {
-        (root->child).push_back(newNode(x, root));
-    }
+Node *newNode(char key, Node *parent, bool isLast)
+{
+    Node *temp = new Node;
+    temp->key = key;
+    temp->parent = parent;
+    temp->isLast = isLast;
+    return temp;
 }
 
-void addValue(Node *root, char x, char y) {
-    bool firstLayer = true;
-    bool secondLayer = true;
+Node* addValue(Node *root, char x) {
     int i;
-    int j;
     for (i = 0; i < root->child.size(); i++) {
         if (root->child[i]->key == x) {
             root->child[i]->freq += 1;
-            firstLayer = false;
-            break;
+            return root->child[i];
         }
     }
-    if (firstLayer == true) {
-        cout << x << endl;
-        (root->child).push_back(newNode(x, root));
-    }
-
-    for (int j = 0; j < root->child[i]->child.size(); j++) {
-        if (root->child[i]->child[j]->key == y) {
-            root->child[i]->child[j]->freq += 1;
-            secondLayer = false;
-        }
-    }
-    if (secondLayer == true) {
-        cout << y << endl;
-        (root->child[i]->child).push_back(newNode(y, root->child[i]));
-    }
+    (root->child).push_back(newNode(x, root));
+    return root->child[i];
 }
-void addValue(Node *root, char x, char y, char z) {
-    bool firstLayer = true;
-    bool secondLayer = true;
-    bool thirdLayer = true;
+
+Node* addValue(Node *root, char x, bool isLast) {
     int i;
-    int j;
     for (i = 0; i < root->child.size(); i++) {
         if (root->child[i]->key == x) {
             root->child[i]->freq += 1;
-            firstLayer = false;
-            break;
+            root->child[i]->isLast = true;
+            return root->child[i];
         }
     }
-    if (firstLayer == true) {
-        (root->child).push_back(newNode(x, root));
-    }
+    (root->child).push_back(newNode(x, root, isLast));
+    return root->child[i];
+}
 
-    for (j = 0; j < root->child[i]->child.size(); j++) {
-        if (root->child[i]->child[j]->key == y) {
-            root->child[i]->child[j]->freq += 1;
-            secondLayer = false;
-            break;
-        }
-    }
-    if (secondLayer == true) {
-        (root->child[i]->child).push_back(newNode(y, root->child[i]));
-    }
+void setTree(Node *root, char a) {
+    addValue(root, a, true);
+}
 
-    for (int l = 0; l < root->child[i]->child[j]->child.size(); l++) {
-        if(root->child[i]->child[j]->child[l]->key == z) {
-            root->child[i]->child[j]->child[l]->freq += 1;
-            thirdLayer = false;
-            break;
-        }
-    }
-    if(thirdLayer == true) {
-        (root->child[i]->child[j]->child).push_back(newNode(z, root->child[i]->child[j]));
-    }
+void setTree(Node *root, char a, char b) {
+    Node* i = addValue(root, a);
+    addValue(i, b, true);
+}
+
+void setTree(Node *root, char a, char b, char c) {
+    Node* i = addValue(root, a);
+    Node* j = addValue(i, b);
+    addValue(j, c, true);
+}
+
+void setTree(Node *root, char a, char b, char c, char d) {
+    Node* i = addValue(root, a);
+    Node* j = addValue(i, b);
+    Node* l = addValue(j, c);
+    addValue(l, d, true);
+}
+
+void setTree(Node *root, char a, char b, char c, char d, char e) {
+    Node* i = addValue(root, a);
+    Node* j = addValue(i, b);
+    Node* l = addValue(j, c);
+    Node* p = addValue(l, d);
+    addValue(p, e, true);
+}
+
+void setTree(Node *root, char a, char b, char c, char d, char e, char f) {
+    Node* i = addValue(root, a);
+    Node* j = addValue(i, b);
+    Node* l = addValue(j, c);
+    Node* p = addValue(l, d);
+    Node* q = addValue(p, e);
+    addValue(q, f, true);
+}
+
+void setTree(Node *root, char a, char b, char c, char d, char e, char f, char g) {
+    Node* i = addValue(root, a);
+    Node* j = addValue(i, b);
+    Node* l = addValue(j, c);
+    Node* p = addValue(l, d);
+    Node* q = addValue(p, e);
+    Node* m = addValue(q, f);
+    addValue(m, g);
 }
 
 void LevelOrderTraversal(Node * root)
@@ -128,7 +129,7 @@ void LevelOrderTraversal(Node * root)
         {
             Node * p = q.front();
             q.pop();
-            cout << p->key << "(" << (p->freq) << ")"; //<< " -> " << p->parent << " | ";
+            cout << p->key << "(" << (p->freq) << ")" << "(" << (p->isLast) << ")"; //<< " -> " << p->parent << " | ";
 
             for (int i=0; i<p->child.size(); i++)
                 q.push(p->child[i]);
@@ -138,35 +139,65 @@ void LevelOrderTraversal(Node * root)
     }
 }
 
-float getEntropy(Node * root) {
-    float n = 0;
-    float entropy = 0;
-    float size = 0;
-    for (int i = 0; i < root->child.size(); i++) {
-        for (int j = 0; j < root->child[i]->child.size(); j++) {
-            int parentFreq = root->child[i]->child[j]->freq;
-            size += parentFreq;
-            for (int l = 0; l < root->child[i]->child[j]->child.size(); l++) {
-                float x = (float)root->child[i]->child[j]->child[l]->freq / (float)parentFreq;
-                if (x == 1) {
-                    continue;
-                } else {
-                    n += (float)root->child[i]->child[j]->child[l]->freq;
-                    entropy -= x * log2(x);
-                }
-
+void getEntropy(Node * root, int k, float *entropy, float *counts, float *sizes){
+    for (int j = 0; j < root->child.size(); j++) {
+        sizes[k] += root->child[j]->freq;
+        if (root->child[j]->freq != root->freq) {
+            counts[k] += root->child[j]->freq;
+            float x;
+            if (root->isLast) {
+                x = (float) root->child[j]->freq / ((float) root->freq - 1.0);
+            } else {
+                x = (float) root->child[j]->freq / (float) root->freq;
             }
+            entropy[k] -= x * log2(x);
+        }
+        if(k+1 != 7){
+            getEntropy(root->child[j], k+1, entropy, counts, sizes);
+        }
+    }
+}
+
+float getEntropyKth(Node * root, int k) {
+    k = k - 1;
+    if(k < 1 || k > 7) {
+        cout << "Mimo rozsah!" << endl;
+        return 0;
+    }
+
+    int newK = 0;
+
+    float entropy[7];
+    float counts[7];
+    float sizes[7];
+
+    for (int i = 0; i < 7; i++) {
+        sizes[i] = 0;
+        counts[i] = 0;
+        entropy[i] = 0;
+    }
+
+    for (int i = 0; i < root->child.size(); i++) {
+        getEntropy(root->child[i], newK, ref(entropy), ref(counts), ref(sizes));
+    }
+
+    for (int i = 0; i < 7; i++) {
+        cout << "K: " << i + 1 << endl;
+        cout << "Velikost: " << sizes[i] << endl;
+        cout << "Počet: " << counts[i] << endl;
+        cout << "Entropy: " << entropy[i] << endl;
+        if(sizes[i] != 0) {
+            cout << "Výsledek: " << (counts[i] / sizes[i]) * entropy[i] << endl;
         }
     }
 
-    return (n/size) * entropy;
+    return (counts[k] / sizes[k]) * entropy[k];
 }
 
 float getZeroOrderEntropy(Node * root, int size) {
     float entropy = 0;
     for (int i = 0; i < root->child.size(); i++) {
         float x = (float)root->child[i]->freq/(float)size;
-        cout << x << endl;
         entropy -= x * log2(x);
     }
 
@@ -176,31 +207,72 @@ float getZeroOrderEntropy(Node * root, int size) {
 int main()
 {
     ifstream file("data.txt", std::ios::binary | std::ios::ate);
+    //GM24385.bnx
+    //data.txt
     streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);
 
     char* buffer = new char[size];
 
-    Node *test = newNode('|');
+    Node *root = newNode('|');
 
     if(file.read(buffer, size)) {
-        for (int i = 0; i < size; i++) {
-            if (i < size - 2) {
-                addValue(test, buffer[i], buffer[i+1], buffer[i+2]);
+        int i = 0;
+        for (i = 0; i < size; i++) {
+            /*
+            cout <<"I: " << i << endl;
+            if (buffer[i] == '\n' && buffer[i+1] != '#') {
+                cout << "Done" << endl;
+                break;
+            }
+            cout << buffer[i] << endl;
+            */
+            if (i < size - 6) {
+                setTree(root, buffer[i], buffer[i+1], buffer[i+2], buffer[i+3], buffer[i+4], buffer[i+5], buffer[i+6]);
+            }
+            if (i == size - 6) {
+                setTree(root, buffer[i], buffer[i+1], buffer[i+2], buffer[i+3], buffer[i+4], buffer[i+5]);
+            }
+            if (i == size - 5) {
+                setTree(root, buffer[i], buffer[i+1], buffer[i+2], buffer[i+3], buffer[i+4]);
+            }
+            if (i == size - 4) {
+                setTree(root, buffer[i], buffer[i+1], buffer[i+2], buffer[i+3]);
+            }
+            if (i == size - 3) {
+                setTree(root, buffer[i], buffer[i+1], buffer[i+2]);
             }
             if (i == size - 2) {
-                //addValue(test, buffer[i], buffer[i+1]);
+                setTree(root, buffer[i], buffer[i+1]);
             }
             if (i == size - 1) {
-                //addValue(test, buffer[i]);
+                setTree(root, buffer[i]);
             }
         }
+
+        /*
+        int x = 0;
+        for (int j = i; j < i + 20000; j++) {
+            cout << buffer[j];
+            if(buffer[j] == '\t') {
+                cout << endl;
+                x++;
+                cout << x << ": ";
+            }
+            if(buffer[j] == '\n') {
+                cout << endl;
+                cout << "New line" << endl;
+                cout << endl;
+                x = 0;
+            }
+        }
+         */
     }
 
-    LevelOrderTraversal(test);
-
-    cout << getEntropy(test) << endl;
-    cout << getZeroOrderEntropy(test, size) << endl;
-
+    LevelOrderTraversal(root);
+    int k = 3;
+    float entropy = getEntropyKth(root, k);
+    cout << "Zero order entropy: " << getZeroOrderEntropy(root, size) << endl;
+    cout << k << "th order entropy: " << entropy << endl;
     return 0;
 }
